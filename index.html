@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>눈으로 보기 — 인터랙티브 학습 시각화 모음</title>
+<meta name="description" content="수식·코드 없이 움직이는 그림으로 익히는 인터랙티브 학습 시각화 모음 — 딥러닝·선형대수·운영체제·로보틱스 등 24개 트랙.">
+<meta property="og:title" content="눈으로 보기 — 인터랙티브 학습 시각화 모음">
+<meta property="og:description" content="수식·코드 없이 움직이는 그림으로. 24개 트랙.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#121723; --panel-2:#161c2b; --line:#222a3d;
+    --ink:#e6ebf5; --muted:#8a95ad; --faint:#5a6478;
+    --q:#37bdf8; --v:#c084fc; --hot:#fbbf24; --good:#34d399;
+    --pink:#f472b6; --blue:#60a5fa; --slate:#94a3b8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; line-height:1.65;
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(55,189,248,.10), transparent 40%),
+      radial-gradient(circle at 90% 0%, rgba(192,132,252,.10), transparent 35%),
+      linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+    background-size:auto,auto,28px 28px,28px 28px;
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px 80px;}
+  .hero{text-align:center; padding:56px 0 8px;}
+  .hero .tag{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em; text-transform:uppercase; color:var(--q);}
+  .hero h1{font-size:clamp(32px,6.5vw,58px); font-weight:800; letter-spacing:-.03em; margin:16px 0 14px; line-height:1.04;
+    background:linear-gradient(100deg,#fff,#9bb6ff 55%,var(--v)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero p{color:var(--muted); max-width:680px; margin:0 auto; font-size:16px;}
+  .hero .stat{margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--faint);}
+  .hero .stat b{color:var(--hot);}
+  .search{display:flex; justify-content:center; margin:30px 0 8px;}
+  .search input{width:min(440px,90%); padding:12px 16px; border-radius:12px; background:var(--panel); border:1px solid var(--line);
+    color:var(--ink); font-size:15px; font-family:inherit; outline:none; transition:.2s;}
+  .search input:focus{border-color:var(--q); box-shadow:0 0 0 3px rgba(55,189,248,.12);}
+  .seclabel{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:42px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px;}
+  .seclabel b{color:var(--accent);}
+  .seclabel .cnt{margin-left:auto; color:var(--faint); letter-spacing:.05em;}
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;}
+  .ccard{display:flex; gap:14px; text-decoration:none; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:20px; transition:.22s; position:relative; overflow:hidden; align-items:flex-start;}
+  .ccard::before{content:''; position:absolute; inset:0 auto 0 0; width:4px; background:var(--accent,var(--q)); opacity:.85;}
+  .ccard:hover{transform:translateY(-4px); border-color:var(--accent,var(--q)); box-shadow:0 14px 36px rgba(0,0,0,.4);}
+  .ccard .ico{width:42px; height:42px; flex:0 0 42px; border-radius:11px; background:var(--panel-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .ccard .ico img{width:30px; height:30px; display:block;}
+  .ccard .body{min-width:0;}
+  .ccard h3{margin:2px 0 6px; font-size:18px; color:var(--ink); letter-spacing:-.01em;}
+  .ccard p{margin:0; font-size:13px; color:var(--muted); line-height:1.55;}
+  .ccard .meta{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent,var(--q)); font-weight:700; letter-spacing:.04em;}
+  .empty{color:var(--faint); text-align:center; padding:40px 0; font-family:'JetBrains Mono',monospace; font-size:13px;}
+  .foot{margin-top:64px; padding-top:22px; border-top:1px solid var(--line); color:var(--faint); font-size:13px; text-align:center;}
+  .foot a{color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">수식·코드 없는 직관 입문</div>
+    <h1>눈으로 보기</h1>
+    <p>딥러닝부터 운영체제·로보틱스까지 — 어려운 개념을 <b>수식·코드 없이 움직이는 그림과 인터랙션</b>으로 익히는 학습 시각화 모음이에요. 모든 트랙은 <b>0번 입문</b>부터 순서대로, 슬라이더·토글을 직접 만지며 따라갈 수 있어요. 빌드·설치 없이 브라우저에서 바로.</p>
+    <div class="stat"><b id="totalCount">24</b>개 트랙 · 모든 수치 브라우저 실시간 계산</div>
+  </div>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="트랙 검색 (예: 칼만, 어텐션, 스케줄링…)" autocomplete="off">
+  </div>
+
+  <div id="groups"></div>
+
+  <div class="foot">
+    비영리 교육용 인터랙티브 학습 자료 · 각 트랙은 정적 HTML+JS로 독립 동작
+  </div>
+</div>
+
+<script>
+// 새 트랙은 여기 한 줄만 추가하세요 (repo = GitHub Pages 경로, fav = 트랙 favicon).
+const TRACKS = [
+  // ── ML · 수학 기초 ──
+  {repo:'deep-learning-pytorch-viz',     title:'딥러닝',          desc:'신경망·역전파·학습 과정을 그림으로', meta:'19챕터',     group:'ml'},
+  {repo:'linear-algebra-viz',            title:'선형대수',        desc:'벡터·행렬·고유값을 ‘변환’으로 보기', meta:'17챕터',     group:'ml'},
+  {repo:'probability-statistics-viz',    title:'확률과 통계',     desc:'베이즈·분포·큰수의 법칙·CLT·추론',   meta:'0번+14챕터', group:'ml'},
+  {repo:'calculus-optimization-viz',     title:'미적분·최적화',   desc:'미분·경사하강·볼록성·뉴턴법',        meta:'0번+16챕터', group:'ml'},
+  {repo:'fourier-signals-viz',           title:'푸리에·신호처리', desc:'사인파·주파수분해·FFT·에피사이클',   meta:'0번+17챕터', group:'ml'},
+  {repo:'reinforcement-learning-viz',    title:'강화학습',        desc:'가치·정책·벨만을 그리드월드로',      meta:'0번+14챕터', group:'ml'},
+  {repo:'transformer-viz',               title:'트랜스포머',      desc:'어텐션 QKV·멀티헤드·위치·생성',      meta:'0번+18챕터', group:'ml'},
+  {repo:'agent-behavior-viz',            title:'행동 설계',       desc:'상태기계(FSM)·행동트리로 의사결정',  meta:'13챕터',     group:'ml'},
+
+  // ── CS · 시스템 ──
+  {repo:'algorithms-data-structures-viz',title:'알고리즘·자료구조', desc:'정렬·그래프·DP를 과정 애니메이션으로', meta:'0번+19챕터', group:'cs'},
+  {repo:'operating-systems-viz',         title:'운영체제',        desc:'프로세스·스케줄링·가상메모리·파일',  meta:'0번+18챕터', group:'cs'},
+  {repo:'concurrency-viz',               title:'동시성·async',    desc:'일꾼·기다림·경쟁 상태·잠금·교착',    meta:'0번+16챕터', group:'cs'},
+  {repo:'database-internals-viz',        title:'데이터베이스',    desc:'인덱스·B+트리·트랜잭션·MVCC·WAL',    meta:'0번+16챕터', group:'cs'},
+  {repo:'distributed-systems-viz',       title:'분산 시스템',     desc:'복제·합의(Raft)·일관성·CAP',         meta:'0번+17챕터', group:'cs'},
+  {repo:'fastapi-viz',                   title:'FastAPI·백엔드',  desc:'요청 흐름·이벤트루프·의존성주입·풀', meta:'0번+16챕터', group:'cs'},
+
+  // ── 피지컬 AI · 로보틱스 ──
+  {repo:'robot-transforms-viz',          title:'로봇 좌표·회전',  desc:'좌표계·회전행렬·쿼터니언·tf',        meta:'0번+17챕터', group:'robo'},
+  {repo:'robot-kinematics-viz',          title:'로봇 기구학·IK',  desc:'순기구학·역기구학·자코비안',         meta:'0번+챕터',   group:'robo'},
+  {repo:'control-pid-viz',               title:'제어·PID',        desc:'피드백·P·I·D·튜닝·도립진자',         meta:'0번+16챕터', group:'robo'},
+  {repo:'optimal-control-mpc-viz',       title:'최적제어·MPC',    desc:'LQR·예측제어·궤적최적화',            meta:'0번+14챕터', group:'robo'},
+  {repo:'state-estimation-viz',          title:'상태추정·센서퓨전', desc:'칼만필터·파티클·SLAM·루프클로저',  meta:'0번+17챕터', group:'robo'},
+  {repo:'motion-planning-viz',           title:'모션 플래닝',     desc:'A*·다익스트라·RRT·포텐셜필드',       meta:'0번+15챕터', group:'robo'},
+  {repo:'computer-vision-viz',           title:'컴퓨터비전·인식', desc:'컨볼루션·특징·스테레오·VO',          meta:'0번+14챕터', group:'robo'},
+  {repo:'robot-grasping-viz',            title:'로봇 그래스핑',   desc:'포즈추정·마찰원뿔·포스클로저',       meta:'0번+15챕터', group:'robo'},
+  {repo:'ros2-viz',                      title:'ROS2',            desc:'노드·토픽·QoS·executor·tf2',         meta:'0번+16챕터', group:'robo'},
+  {repo:'robot-learning-viz',            title:'로봇 학습',       desc:'모방학습·디퓨전·Sim2Real·VLA',       meta:'0번+14챕터', group:'robo'},
+];
+
+const GROUPS = [
+  {key:'ml',   label:'ML · 수학 기초',        accent:'var(--q)'},
+  {key:'cs',   label:'CS · 시스템',           accent:'var(--hot)'},
+  {key:'robo', label:'피지컬 AI · 로보틱스',  accent:'var(--v)'},
+];
+
+const root = document.getElementById('groups');
+document.getElementById('totalCount').textContent = TRACKS.length;
+
+function render(filter){
+  const f = (filter||'').trim().toLowerCase();
+  root.innerHTML = '';
+  let shown = 0;
+  GROUPS.forEach(g => {
+    const items = TRACKS.filter(t => t.group===g.key &&
+      (!f || (t.title+' '+t.desc+' '+t.repo).toLowerCase().includes(f)));
+    if(!items.length) return;
+    shown += items.length;
+    const sec = document.createElement('div');
+    sec.style.setProperty('--accent', g.accent);
+    const lab = document.createElement('div');
+    lab.className = 'seclabel';
+    lab.innerHTML = `<b>${g.label}</b><span class="cnt">${items.length}</span>`;
+    sec.appendChild(lab);
+    const grid = document.createElement('div');
+    grid.className = 'cards';
+    items.forEach(t => {
+      const a = document.createElement('a');
+      a.className = 'ccard';
+      a.href = `https://repeeps.github.io/${t.repo}/`;
+      a.innerHTML =
+        `<span class="ico"><img loading="lazy" src="https://repeeps.github.io/${t.repo}/shared/favicon.svg" alt=""></span>`+
+        `<span class="body"><h3>${t.title}</h3><p>${t.desc}</p><div class="meta">${t.meta} · 눈으로 보기 →</div></span>`;
+      grid.appendChild(a);
+    });
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+  if(!shown){
+    root.innerHTML = `<div class="empty">‘${filter}’에 맞는 트랙이 없어요.</div>`;
+  }
+}
+
+render('');
+document.getElementById('q').addEventListener('input', e => render(e.target.value));
+</script>
+</body>
+</html>
